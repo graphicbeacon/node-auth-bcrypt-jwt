@@ -12,11 +12,14 @@ var mockDatabase = {
     user: 'admin',
     pass: bcrypt.hashSync('superman', salt)
 };
-var globalSecret = 'simple secret'; // Should be dynamically generated
+var globalSecret = 'simple secret'; // TODO: Dynamically generate secret
 
 // Middleware settings
 app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
-app.use(expressJwt({secret: globalSecret}).unless({
+app.use(expressJwt({
+    secret: globalSecret
+    // TODO: Handle jwt error response
+}).unless({
     path: [ // Does not validate token is paths match any of these routes
         '/', 
         '/login'
