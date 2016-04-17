@@ -1,0 +1,26 @@
+{
+  "name": "node-auth-bcrypt-jwt",
+  "version": "1.0.0",
+  "description": "Simple authentication with nodejs, bcrypt hashing and json web tokens",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bcrypt",
+    "json",
+    "web",
+    "tokens",
+    "passport",
+    "auth"
+  ],
+  "author": "Jermaine Oppong",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^0.8.5",
+    "express": "^4.13.4",
+    "express-jwt": "^3.3.0",
+    "jsonwebtoken": "^5.7.0",
+    "passport": "^0.3.2"
+  }
+}
