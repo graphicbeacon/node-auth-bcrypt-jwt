@@ -7,9 +7,11 @@ var bodyParser = require('body-parser');
 
 // Start Express instance
 var app = express();
+var salt = bcrypt.genSaltSync(10);
 var mockDatabase = {
     user: 'admin',
-    pass: 'superman'
+    pass: bcrypt.hashSync('superman', salt),
+    salt: salt
 };
 var globalSecret = 'simple secret'; // Should be dynamically generated
 
@@ -26,15 +28,16 @@ app.get('/', function(req, res) {
     res.send('Hello World');
 });
 
-app.post('/login', function(req, res, next) {
-    var userAuth = req.body;
+app.post('/login', function(req, res) {
+    var body = req.body;
+    var password = bcrypt.hashSync(body.password, mockDatabase.salt);
     
     // TODO: Connect to database rather than in-memory object
-    if(userAuth.username === mockDatabase.user &&
-        userAuth.password === mockDatabase.pass) {
+    if(body.username === mockDatabase.user &&
+        password === mockDatabase.pass) {
         
         // creates a json web token to distribute as logged in bearer
-        var responseToken = jwt.sign({user: userAuth.username}, globalSecret);
+        var responseToken = jwt.sign({user: body.username}, globalSecret);
         
         // console.log(responseToken);
         res.status(200).json({auth: responseToken});
