@@ -17,11 +17,13 @@ This should return a token response like this:
 ```
 { token: '{token}' }
 ```
-You will then need to pass this token in your 'Authorization' header sending a `GET` request to `/protected`
+Encode type should always be set to `x-www-form-urlencoded`. You will then need to pass this token in your 'Authorization' header sending a `GET` request to `/protected`
 ```
 Authorization = 'Bearer {token}'
 ```
 This will returning a 200 response with "Viewing protected route!" as the content, demonstrating that your jwt was successfully verified. If not verified an "UnauthorizedError" type response will be returned.
+
+You can also signup new users by sending by passing `username` and `password` credentials via **POST** to `signup`. Encode type should also be set to `x-www-form-urlencoded`.
 
 [//]: # (Tagged Urls)
 [Chrome's Postman plugin]: https://chrome.google.com/webstore/detail/postman-rest-client-short/mkhojklkhkdaghjjfdnphfphiaiohkef/related?hl=en
