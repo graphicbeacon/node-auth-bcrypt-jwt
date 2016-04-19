@@ -54,9 +54,14 @@ app.post('/login', function(req, res) {
 
 app.post('/signup', function(req, res) {
     var body = req.body;
+    var userExists = userDatabase.findIndex(function(user) {
+        return body.username === user.user;
+    }) > -1;
     
     if(!body.username || !body.password) { // Not enough creds to create user
         res.status(401).send('Not enough information to create user!');    
+    } else if(userExists) { // Username already taken
+        res.status(401).send('Username already exists! Please create a new one.');
     } else {
         // User and pass supplied
         var salt = bcrypt.genSaltSync(10);
