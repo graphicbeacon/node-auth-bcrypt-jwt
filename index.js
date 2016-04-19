@@ -8,11 +8,13 @@ var bodyParser = require('body-parser');
 // Start Express instance
 var app = express();
 var salt = bcrypt.genSaltSync(10);
-var mockDatabase = {
-    user: 'admin',
-    pass: bcrypt.hashSync('superman', salt)
-};
-var globalSecret = 'simple secret'; // TODO: Dynamically generate secret
+var userDatabase = [
+    {
+        user: 'admin',
+        pass: bcrypt.hashSync('superman', salt)
+    }
+];
+var globalSecret = 'simple secret'; // TODO: Dynamically generate secret key
 
 // Middleware settings
 app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
@@ -22,7 +24,8 @@ app.use(expressJwt({
 }).unless({
     path: [ // Does not validate token is paths match any of these routes
         '/', 
-        '/login'
+        '/login',
+        '/signup'
     ]
 }));
 
@@ -32,11 +35,13 @@ app.get('/', function(req, res) {
 
 app.post('/login', function(req, res) {
     var body = req.body;
-    var isValidPass = bcrypt.compareSync(body.password, mockDatabase.pass);
     
     // TODO: Connect to database rather than in-memory object
-    if(body.username === mockDatabase.user && isValidPass) {
-        
+    var user = userDatabase.find(function(user) {
+       return body.username === user.user && bcrypt.compareSync(body.password, user.pass); 
+    });
+    
+    if(typeof user === 'object') {
         // creates a json web token to distribute as logged in bearer
         var responseToken = jwt.sign({user: body.username}, globalSecret);
         
@@ -44,6 +49,27 @@ app.post('/login', function(req, res) {
         res.status(200).json({auth: responseToken});
     } else {
         res.status(401).send('Invalid username or password!');
+    }
+});
+
+app.post('/signup', function(req, res) {
+    var body = req.body;
+    
+    if(!body.username || !body.password) { // Not enough creds to create user
+        res.status(401).send('Not enough information to create user!');    
+    } else {
+        // User and pass supplied
+        var salt = bcrypt.genSaltSync(10);
+        var newUser = {
+            user: body.username,
+            pass: bcrypt.hashSync(body.password, salt)
+        };
+        
+        // Add to database list
+        userDatabase.push(newUser);
+        
+        // Success!
+        res.status(200).send('Successfully created user!');
     }
 });
 
