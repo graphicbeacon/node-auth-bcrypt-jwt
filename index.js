@@ -55,7 +55,7 @@ app.post('/login', function(req, res) {
 app.post('/signup', function(req, res) {
     var body = req.body;
     var userExists = userDatabase.findIndex(function(user) {
-        return body.username === user.user;
+        return body.username.toLowerCase() === user.user.toLowerCase();
     }) > -1;
     
     if(!body.username || !body.password) { // Not enough creds to create user
