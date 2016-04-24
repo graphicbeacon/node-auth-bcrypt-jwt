@@ -1,36 +1,74 @@
 var bcrypt = require('bcrypt');
 var express = require('express');
-var passport = require('passport');
 var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 
-// Start Express instance
-var app = express();
-var salt = bcrypt.genSaltSync(10);
-var userDatabase = [
-    {
-        user: 'admin',
-        pass: bcrypt.hashSync('superman', salt)
-    }
-];
+
+// ----------------------------
+// Config
+// ----------------------------
 var globalSecret = 'simple secret'; // TODO: Dynamically generate secret key
 
+
+// ----------------------------
+// Database setup
+// ----------------------------
+var salt = bcrypt.genSaltSync(10);
+var userDatabase = [{
+    user: 'admin',
+    pass: bcrypt.hashSync('superman', salt)
+}];
+var app = express(); // Start Express instance
+
+
+// ----------------------------
 // Middleware settings
+// ----------------------------
+app.set('views', __dirname + '/server/views');
+app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
+app.use(cookieParser()); // Create cookie parser
 app.use(expressJwt({
-    secret: globalSecret
-    // TODO: Handle jwt error response
+    secret: globalSecret,
+    getToken: function fromCookies(req) {
+        // Token is taken from auth cookie name that was created when logged in 
+        return req.cookies.auth || null;
+    }
 }).unless({
-    path: [ // Does not validate token is paths match any of these routes
+    path: [ // Does not validate token if paths match any of these routes
         '/', 
         '/login',
         '/signup'
     ]
-}));
+}))
+app.use(function(err, req, res, next) {
+    if(err.name === 'UnauthorizedError') { // Handles JWT error response
+        res.status(401).redirect('/login');
+    }
+});
 
+
+// ----------------------------
+// Routes
+// ----------------------------
 app.get('/', function(req, res) {
-    res.send('Hello World');
+    res.render('index', {viewTitle: 'Hello World', content: 'Hello World'});
+});
+
+app.get('/login', function(req, res) {
+    res.render('login', {viewTitle: 'Login', content: 'This is the /login view.'});
+});
+
+app.get('/protected', function(req, res) {
+    res.render('protected', {viewTitle: 'Protected', content: 'This view is protected.'});
+});
+
+app.get('/logout', function(req, res) {
+    // Remove auth cookie and redirect to login again
+    res.clearCookie('auth');
+    res.status(302).redirect('/login'); 
 });
 
 app.post('/login', function(req, res) {
@@ -45,8 +83,9 @@ app.post('/login', function(req, res) {
         // creates a json web token to distribute as logged in bearer
         var responseToken = jwt.sign({user: body.username}, globalSecret);
         
-        // console.log(responseToken);
-        res.status(200).json({auth: responseToken});
+        // Put signed token in cookie to be used in subsequent requests
+        res.cookie('auth', responseToken);
+        res.status(200).redirect('/protected');
     } else {
         res.status(401).send('Invalid username or password!');
     }
@@ -82,6 +121,10 @@ app.get('/protected', function(req, res) {
     res.send('Viewing protected route!');
 });
 
+
+// ----------------------------
+// App start
+// ----------------------------
 app.listen(4000, function() {
     console.log('App listening on port 4000...');
 });

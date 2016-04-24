@@ -1,0 +1,10 @@
+extends ./includes/layout.pug
+
+block mainContent
+    h1= content
+    form(method="post", action="/login")
+        input#username(type="text", name="username", placeholder="Enter your username")
+        br
+        input#password(type="password", name="password", placeholder="Enter your password")
+        br
+        button(type="submit") Log in

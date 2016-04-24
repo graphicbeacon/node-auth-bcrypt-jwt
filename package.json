@@ -19,9 +19,10 @@
   "dependencies": {
     "bcrypt": "^0.8.5",
     "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
     "express": "^4.13.4",
     "express-jwt": "^3.3.0",
     "jsonwebtoken": "^5.7.0",
-    "passport": "^0.3.2"
+    "pug": "^0.1.0"
   }
 }
