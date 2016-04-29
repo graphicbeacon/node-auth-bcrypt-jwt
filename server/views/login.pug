@@ -2,9 +2,13 @@ extends ./includes/layout.pug
 
 block mainContent
     h1= content
-    form(method="post", action="/login")
-        input#username(type="text", name="username", placeholder="Enter your username")
-        br
-        input#password(type="password", name="password", placeholder="Enter your password")
-        br
-        button(type="submit") Log in
+    form.form-horizontal(method="post", action="/login")
+        .form-group
+            .col-sm-12.col-md-6
+                input.form-control#username(type="text", name="username", placeholder="Enter your username")
+        .form-group
+            .col-sm-12.col-md-6
+                input.form-control#password(type="password", name="password", placeholder="Enter your password")
+        .form-group
+            .col-sm-12.col-md-6
+                button.btn.btn-default(type="submit") Log in

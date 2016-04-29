@@ -58,14 +58,16 @@ app.get('/', function(req, res) {
 });
 
 app.get('/login', function(req, res) {
-    res.render('login', {viewTitle: 'Login', content: 'This is the /login view.'});
+    // TODO: Redirect to protected screen if already logged in
+    res.render('login', {viewTitle: 'Login', content: 'Please login'});
 });
 
 app.get('/protected', function(req, res) {
-    res.render('protected', {viewTitle: 'Protected', content: 'This view is protected.'});
+    res.render('protected', {viewTitle: 'Protected', content: 'User Dashboard'});
 });
 
 app.get('/logout', function(req, res) {
+    // TODO: check that referrer and origin are the same domain to prevent cross site attacks
     // Remove auth cookie and redirect to login again
     res.clearCookie('auth');
     res.status(302).redirect('/login'); 

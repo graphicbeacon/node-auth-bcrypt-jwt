@@ -2,5 +2,20 @@ doctype html
 html(lang="en")
     head
         title= viewTitle
+        link(href="https://bootswatch.com/flatly/bootstrap.min.css", rel="stylesheet")
     body
-        block mainContent
+        .navbar.navbar-default.navbar-fixed-top
+            .container
+                .navbar-header
+                    a.navbar-brand Brand
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href="/") Home
+                    li
+                        a(href="/login") Login
+                    li
+                        a(href="/logout") Logout
+        .container(style="padding-top: 70px")
+            .row
+                .col-sm-12
+                    block mainContent
