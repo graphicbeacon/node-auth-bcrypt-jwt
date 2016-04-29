@@ -1,9 +1,11 @@
 var bcrypt = require('bcrypt');
 var express = require('express');
-var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+
+// Project files
+var auth = require('./server/lib/auth.service');
 
 
 // ----------------------------
@@ -73,25 +75,11 @@ app.get('/logout', function(req, res) {
     res.status(302).redirect('/login'); 
 });
 
-app.post('/login', function(req, res) {
-    var body = req.body;
-    
-    // TODO: Connect to database rather than in-memory object
-    var user = userDatabase.find(function(user) {
-       return body.username === user.user && bcrypt.compareSync(body.password, user.pass); 
-    });
-    
-    if(typeof user === 'object') {
-        // creates a json web token to distribute as logged in bearer
-        var responseToken = jwt.sign({user: body.username}, globalSecret);
-        
-        // Put signed token in cookie to be used in subsequent requests
-        res.cookie('auth', responseToken);
-        res.status(200).redirect('/protected');
-    } else {
-        res.status(401).send('Invalid username or password!');
-    }
-});
+app.post('/login', auth.login({
+    database: userDatabase,
+    redirectTo: '/protected',
+    secret: globalSecret
+}));
 
 app.post('/signup', function(req, res) {
     var body = req.body;
@@ -117,10 +105,6 @@ app.post('/signup', function(req, res) {
         // Success!
         res.status(200).send('Successfully created user!');
     }
-});
-
-app.get('/protected', function(req, res) {
-    res.send('Viewing protected route!');
 });
 
 
