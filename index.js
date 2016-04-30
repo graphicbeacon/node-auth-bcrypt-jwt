@@ -41,6 +41,11 @@ app.use(expressJwt({
         '/signup'
     ]
 }));
+app.use(function(req, res, next) {
+    // Validated users will have a user property on the request object
+    res.locals.isLoggedIn = req.hasOwnProperty('user');
+    next();
+});
 app.use(function(err, req, res, next) {
     if(err.name === 'UnauthorizedError') { // Handles JWT error response
         res.status(401).redirect('/login');
@@ -62,7 +67,7 @@ app.get('/login', function(req, res) {
 
 app.get('/signup', function(req, res) {
     // TODO: Redirect to protected screen if already logged in
-    res.render('signup', {viewTitle: 'Signup', content: 'Create an account'});
+    res.render('signup', {viewTitle: 'Signup', content: 'Sign up'});
 });
 
 app.get('/protected', function(req, res) {

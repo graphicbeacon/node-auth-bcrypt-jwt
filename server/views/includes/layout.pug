@@ -14,7 +14,11 @@ html(lang="en")
                     li
                         a(href="/protected") Dashboard
                     li
-                        a(href="/login") Login
+                        if isLoggedIn
+                            a(href="/logout") Log out
+                        else
+                            a(href="/login") Log in
+                            
         .container(style="padding-top: 70px")
             .row
                 .col-sm-12
