@@ -1,6 +1,6 @@
 # node-auth-bcrypt-jwt
 
-An experimental project exploring NodeJS authentication with bcrypt hashing and json web tokens. This is still on-going.
+An on-going project exploring user registration with the NodeJS platform. Authentication is implemented with bcrypt hashing and json web tokens.
 
 To run, cd into the directory and follow the below instructions:
 * Run `npm install` to update local dependencies
