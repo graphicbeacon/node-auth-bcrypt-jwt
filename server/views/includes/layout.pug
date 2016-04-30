@@ -3,6 +3,13 @@ html(lang="en")
     head
         title= viewTitle
         link(href="https://bootswatch.com/flatly/bootstrap.min.css", rel="stylesheet")
+        style.
+            .navbar.navbar-fixed-top {
+                padding: 10px 0;
+            }
+            .main-content-section {
+                padding-top: 100px;
+            }
     body
         .navbar.navbar-default.navbar-fixed-top
             .container
@@ -11,18 +18,18 @@ html(lang="en")
                 ul.nav.navbar-nav.navbar-right
                     li
                         a(href="/") Home
-                    li
-                        a(href="/protected") Dashboard
                     if isLoggedIn
+                        li
+                            a(href="/protected") Dashboard
                         li
                             a(href="/logout") Log out
                     else
                         li
-                            a(href="/signup") Sign up
-                        li
                             a(href="/login") Log in
+                        li
+                            a.btn.btn-default(href="/signup") Sign up
                             
-        .container(style="padding-top: 70px")
+        .container.main-content-section
             .row
                 .col-sm-12
                     block mainContent
