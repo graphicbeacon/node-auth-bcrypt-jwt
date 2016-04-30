@@ -13,10 +13,13 @@ html(lang="en")
                         a(href="/") Home
                     li
                         a(href="/protected") Dashboard
-                    li
-                        if isLoggedIn
+                    if isLoggedIn
+                        li
                             a(href="/logout") Log out
-                        else
+                    else
+                        li
+                            a(href="/signup") Sign up
+                        li
                             a(href="/login") Log in
                             
         .container(style="padding-top: 70px")

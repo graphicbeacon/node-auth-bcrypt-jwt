@@ -2,6 +2,7 @@ var express = require('express');
 var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var jwt = require('jsonwebtoken');
 
 // Project files
 var auth = require('./server/lib/auth.service');
@@ -41,14 +42,22 @@ app.use(expressJwt({
         '/signup'
     ]
 }));
-app.use(function(req, res, next) {
-    // Validated users will have a user property on the request object
-    res.locals.isLoggedIn = req.hasOwnProperty('user');
-    next();
-});
 app.use(function(err, req, res, next) {
     if(err.name === 'UnauthorizedError') { // Handles JWT error response
         res.status(401).redirect('/login');
+    }
+});
+app.use(function(req, res, next) { // Verifies logged in user
+    var authToken = req.cookies ? req.cookies.auth : null;
+    if(authToken) {
+        jwt.verify(authToken, globalSecret, function(err, decoded) {
+            // Validated users will have a user property on the request object
+            res.locals.isLoggedIn = !!decoded;
+            next();
+        });
+    } else {
+        // Just move along
+        next();   
     }
 });
 
