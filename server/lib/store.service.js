@@ -9,7 +9,7 @@ var userDatabase = [{
 module.exports.getUser = function(username, password) {
     return userDatabase.find(function(user) {
         return username === user.user && bcrypt.compareSync(password, user.pass); 
-    })
+    });
 }
 
 module.exports.addUser = function(username, password) {

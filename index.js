@@ -25,6 +25,7 @@ var app = express(); // Start Express instance
 // ----------------------------
 app.set('views', __dirname + '/server/views');
 app.set('view engine', 'pug');
+// TODO: Add express-session to ensure same valid user is making requests
 app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
 app.use(cookieParser()); // Create cookie parser
 app.use(expressJwt({
@@ -35,7 +36,7 @@ app.use(expressJwt({
     }
 }).unless({
     path: [ // Does not validate token if paths match any of these routes
-        '/', 
+        '/',
         '/login',
         '/signup'
     ]
@@ -72,25 +73,13 @@ app.get('/logout', function(req, res) {
 
 app.post('/login', auth.login({
     redirectTo: '/protected',
-    secret: globalSecret
+    secret: globalSecret,
+    store: store
 }));
 
-app.post('/signup', function(req, res) {
-    var username = req.body.username,
-        password = req.body.password;
-    
-    if(!username || !password) { // Not enough creds to create user
-        res.status(401).send('Not enough information to create user!');    
-    } else if(store.isExistingUser(username)) { // Username already taken
-        res.status(401).send('Username already exists! Please create a new one.');
-    } else {
-        // Populate database with supplied details
-        store.addUser(username, password);
-        
-        // Success!
-        res.status(200).send('Successfully created user!');
-    }
-});
+app.post('/signup', auth.signup({
+    store: store
+}));
 
 
 // ----------------------------

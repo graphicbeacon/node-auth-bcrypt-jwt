@@ -1,11 +1,10 @@
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
-var store = require('./store.service');
 
 module.exports.login = function(config) {
-    var userDatabase = store.get,
-        redirectTo = config.redirectTo,
-        secret = config.secret;
+    var redirectTo = config.redirectTo,
+        secret = config.secret,
+        store = config.store;
         
     return function(req, res) {
         var body = req.body;
@@ -22,6 +21,27 @@ module.exports.login = function(config) {
             res.status(200).redirect(redirectTo);
         } else {
             res.status(401).send('Invalid username or password!');
+        }
+    }
+}
+
+module.exports.signup = function(config) {
+    var store = config.store;
+    
+    return function(req, res) {
+        var username = req.body.username,
+            password = req.body.password;
+        
+        if(!username || !password) { // Not enough creds to create user
+            res.status(401).send('Not enough information to create user!');    
+        } else if(store.isExistingUser(username)) { // Username already taken
+            res.status(401).send('Username already exists! Please create a new one.');
+        } else {
+            // Populate database with supplied details
+            store.addUser(username, password);
+            
+            // Success!
+            res.status(200).send('Successfully created user!');
         }
     }
 }
