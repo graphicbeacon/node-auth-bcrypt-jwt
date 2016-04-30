@@ -1,4 +1,3 @@
-var bcrypt = require('bcrypt');
 var express = require('express');
 var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
@@ -6,6 +5,7 @@ var cookieParser = require('cookie-parser');
 
 // Project files
 var auth = require('./server/lib/auth.service');
+var store = require('./server/lib/store.service.js');
 
 
 // ----------------------------
@@ -15,13 +15,8 @@ var globalSecret = 'simple secret'; // TODO: Dynamically generate secret key
 
 
 // ----------------------------
-// Database setup
+// App setup
 // ----------------------------
-var salt = bcrypt.genSaltSync(10);
-var userDatabase = [{
-    user: 'admin',
-    pass: bcrypt.hashSync('superman', salt)
-}];
 var app = express(); // Start Express instance
 
 
@@ -44,7 +39,7 @@ app.use(expressJwt({
         '/login',
         '/signup'
     ]
-}))
+}));
 app.use(function(err, req, res, next) {
     if(err.name === 'UnauthorizedError') { // Handles JWT error response
         res.status(401).redirect('/login');
@@ -76,31 +71,21 @@ app.get('/logout', function(req, res) {
 });
 
 app.post('/login', auth.login({
-    database: userDatabase,
     redirectTo: '/protected',
     secret: globalSecret
 }));
 
 app.post('/signup', function(req, res) {
-    var body = req.body;
-    var userExists = userDatabase.findIndex(function(user) {
-        return body.username.toLowerCase() === user.user.toLowerCase();
-    }) > -1;
+    var username = req.body.username,
+        password = req.body.password;
     
-    if(!body.username || !body.password) { // Not enough creds to create user
+    if(!username || !password) { // Not enough creds to create user
         res.status(401).send('Not enough information to create user!');    
-    } else if(userExists) { // Username already taken
+    } else if(store.isExistingUser(username)) { // Username already taken
         res.status(401).send('Username already exists! Please create a new one.');
     } else {
-        // User and pass supplied
-        var salt = bcrypt.genSaltSync(10);
-        var newUser = {
-            user: body.username,
-            pass: bcrypt.hashSync(body.password, salt)
-        };
-        
-        // Add to database list
-        userDatabase.push(newUser);
+        // Populate database with supplied details
+        store.addUser(username, password);
         
         // Success!
         res.status(200).send('Successfully created user!');

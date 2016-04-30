@@ -1,8 +1,9 @@
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
+var store = require('./store.service');
 
 module.exports.login = function(config) {
-    var userDatabase = config.database,
+    var userDatabase = store.get,
         redirectTo = config.redirectTo,
         secret = config.secret;
         
@@ -10,9 +11,7 @@ module.exports.login = function(config) {
         var body = req.body;
         
         // TODO: Connect to database rather than in-memory object
-        var user = userDatabase.find(function(user) {
-            return body.username === user.user && bcrypt.compareSync(body.password, user.pass); 
-        });
+        var user = store.getUser(body.username, body.password);
         
         if(typeof user === 'object') {
             // creates a json web token to distribute as logged in bearer
