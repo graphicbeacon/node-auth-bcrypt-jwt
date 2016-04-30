@@ -60,6 +60,11 @@ app.get('/login', function(req, res) {
     res.render('login', {viewTitle: 'Login', content: 'Please login'});
 });
 
+app.get('/signup', function(req, res) {
+    // TODO: Redirect to protected screen if already logged in
+    res.render('signup', {viewTitle: 'Signup', content: 'Create an account'});
+});
+
 app.get('/protected', function(req, res) {
     res.render('protected', {viewTitle: 'Protected', content: 'User Dashboard'});
 });

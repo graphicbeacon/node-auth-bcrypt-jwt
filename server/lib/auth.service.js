@@ -31,9 +31,12 @@ module.exports.signup = function(config) {
     return function(req, res) {
         var username = req.body.username,
             password = req.body.password;
+            passwordRepeat = req.body.passwordRepeat;
         
-        if(!username || !password) { // Not enough creds to create user
-            res.status(401).send('Not enough information to create user!');    
+        if(!username || !password || !passwordRepeat) { // Not enough creds to create user
+            res.status(401).send('Not enough information to create user.');    
+        } else if(password !== passwordRepeat) { // Passwords not matching
+            res.status(401).send('Passwords do not match.');
         } else if(store.isExistingUser(username)) { // Username already taken
             res.status(401).send('Username already exists! Please create a new one.');
         } else {
@@ -41,7 +44,9 @@ module.exports.signup = function(config) {
             store.addUser(username, password);
             
             // Success!
-            res.status(200).send('Successfully created user!');
+            res.status(200)
+                .set('Content-Type', 'text/html')
+                .send('Successfully created user. Please <a href="/login">login to your account</a>.');
         }
     }
 }

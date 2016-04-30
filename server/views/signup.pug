@@ -2,13 +2,16 @@ extends ./includes/layout.pug
 
 block mainContent
     h1= content
-    form.form-horizontal(method="post", action="/login")
+    form.form-horizontal(method="post", action="/signup")
         .form-group
             .col-sm-12.col-md-6
                 input.form-control#username(type="text", name="username", placeholder="Enter your username", required)
         .form-group
             .col-sm-12.col-md-6
                 input.form-control#password(type="password", name="password", placeholder="Enter your password", required)
+        .form-group
+            .col-sm-12.col-md-6
+                input.form-control#passwordRepeat(type="password", name="passwordRepeat", placeholder="Repeat your password", required)
         .form-group
             .col-sm-12.col-md-6
                 button.btn.btn-default(type="submit") Log in
