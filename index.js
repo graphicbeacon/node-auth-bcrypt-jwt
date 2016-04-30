@@ -12,14 +12,19 @@ var store = require('./server/lib/store.service.js');
 // ----------------------------
 // Config
 // ----------------------------
-var globalSecret = 'simple secret'; // TODO: Dynamically generate secret key
+var config = {
+    secret: 'simple secret',  // TODO: Dynamically generate secret key
+    paths: {
+        tokenWhitelist: ['/', '/login', '/signup'],
+        loginBlacklist: ['/login', '/signup']
+    }
+}
 
 
 // ----------------------------
 // App setup
 // ----------------------------
 var app = express(); // Start Express instance
-
 
 // ----------------------------
 // Middleware settings
@@ -30,17 +35,13 @@ app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
 app.use(cookieParser()); // Create cookie parser
 app.use(expressJwt({
-    secret: globalSecret,
+    secret: config.secret,
     getToken: function fromCookies(req) {
         // Token is taken from auth cookie name that was created when logged in 
         return req.cookies.auth || null;
     }
 }).unless({
-    path: [ // Does not validate token if paths match any of these routes
-        '/',
-        '/login',
-        '/signup'
-    ]
+    path: config.paths.tokenWhitelist // Does not validate token if paths match any of these routes
 }));
 app.use(function(err, req, res, next) {
     if(err.name === 'UnauthorizedError') { // Handles JWT error response
@@ -48,9 +49,9 @@ app.use(function(err, req, res, next) {
     }
 });
 app.use(function(req, res, next) { // Verifies logged in user
-    var authToken = req.cookies ? req.cookies.auth : null;
+    var authToken = req.cookies.auth || null;
     if(authToken) {
-        jwt.verify(authToken, globalSecret, function(err, decoded) {
+        jwt.verify(authToken, config.secret, function(err, decoded) {
             // Validated users will have a user property on the request object
             res.locals.isLoggedIn = !!decoded;
             next();
@@ -59,6 +60,16 @@ app.use(function(req, res, next) { // Verifies logged in user
         // Just move along
         next();   
     }
+});
+app.use(function(req, res, next) {
+    var blacklistedLoggedInRoutes = config.paths.loginBlacklist.indexOf(req.url) > -1;
+    // If already logged in redirect any requests to 
+    // blacklisted views to dashboard screens...
+    if(blacklistedLoggedInRoutes && res.locals && res.locals.isLoggedIn) {
+        res.status(302).redirect('/protected');
+    }
+    // ...else move on
+    next();
 });
 
 
@@ -92,7 +103,7 @@ app.get('/logout', function(req, res) {
 
 app.post('/login', auth.login({
     redirectTo: '/protected',
-    secret: globalSecret,
+    secret: config.secret,
     store: store
 }));
 
