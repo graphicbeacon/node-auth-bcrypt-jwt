@@ -2,6 +2,7 @@ var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var jwt = require('jsonwebtoken');
+var session = require('express-session');
 
 module.exports.init = function(config) {
     var app = config.app,
@@ -12,6 +13,7 @@ module.exports.init = function(config) {
     // TODO: Add express-session to ensure same valid user is making requests
     app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
     app.use(cookieParser()); // Create cookie parser
+    app.use(session({secret: config.secret, resave: true, saveUninitialized: true})) // TODO: Replace in memory session store
     app.use(expressJwt({
         secret: config.secret,
         getToken: function fromCookies(req) {
