@@ -12,10 +12,6 @@ var routes = require('./server/lib/routes.config');
 // App setup
 // ----------------------------
 var app = express(); // Start Express instance
-auth.init({ // TODO: find better way of doing this?
-    config: config,
-    store: store
-});
 
 
 // ----------------------------
@@ -32,7 +28,9 @@ middleware.init({
 // ----------------------------
 routes.init({
     app: app,
-    auth: auth
+    auth: auth,
+    config: config,
+    store: store
 });
 
 

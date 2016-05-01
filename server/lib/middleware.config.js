@@ -18,7 +18,6 @@ module.exports.init = function(options) {
             // Logging
             console.log('[Secret]', config.secret);
             console.log('[JWT payload]:', payload);
-            console.log('[User]:', req.user);
             console.log('[Session]:', req.session);
             
             done(null, config.secret);
