@@ -24,6 +24,7 @@ module.exports.init = function(config) {
 
     app.get('/logout', function(req, res) {
         // TODO: check that referrer and origin are the same domain to prevent cross site attacks
+        // TODO: Implement logout implementation in auth service?
         // Remove auth cookie and redirect to login again
         res.clearCookie('auth');
         res.status(302).redirect('/login'); 

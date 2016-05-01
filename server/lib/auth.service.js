@@ -14,7 +14,10 @@ module.exports.login = function(config) {
         
         if(typeof user === 'object') {
             // creates a json web token to distribute as logged in bearer
-            var responseToken = jwt.sign({user: body.username}, secret);
+            var responseToken = jwt.sign({user: body.username}, secret, {
+                issuer: config.title,
+                subject: body.username
+            });
             
             // Put signed token in cookie to be used in subsequent requests
             res.cookie('auth', responseToken);
@@ -50,3 +53,5 @@ module.exports.signup = function(config) {
         }
     }
 }
+
+// TODO: Implement logout functionality

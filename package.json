@@ -24,6 +24,7 @@
     "express-jwt": "^3.3.0",
     "express-session": "^1.13.0",
     "jsonwebtoken": "^5.7.0",
+    "node-uuid": "^1.4.7",
     "pug": "^0.1.0"
   }
 }

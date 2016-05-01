@@ -1,18 +1,20 @@
 var express = require('express');
+var uuid = require('node-uuid');
 
 // Project files
 var auth = require('./server/lib/auth.service');
-var store = require('./server/lib/store.service.js');
-var middleware = require('./server/lib/middleware.js');
-var routes = require('./server/lib/routes.js');
+var store = require('./server/lib/in-memory.store');
+var middleware = require('./server/lib/middleware.config');
+var routes = require('./server/lib/routes.config');
 
 
 // ----------------------------
 // Config
 // ----------------------------
 var config = {
-    port: 4000,
-    secret: 'simple secret',  // TODO: Dynamically generate secret key
+    title: 'Brand',
+    port: process.env.PORT || 4000,
+    secret: uuid.v4(), // Generate RFC4122 unique identifier
     paths: {
         tokenWhitelist: ['/', '/login', '/signup'],
         loginBlacklist: ['/login', '/signup']
