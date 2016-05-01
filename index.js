@@ -1,31 +1,21 @@
 var express = require('express');
-var uuid = require('node-uuid');
 
 // Project files
+var config = require('./server/lib/config');
 var auth = require('./server/lib/auth.service');
-var store = require('./server/lib/in-memory.store');
+var store = require('./server/lib/in-memory.store'); // TODO: Connect to database rather than in-memory object
 var middleware = require('./server/lib/middleware.config');
 var routes = require('./server/lib/routes.config');
-
-
-// ----------------------------
-// Config
-// ----------------------------
-var config = {
-    title: 'Brand',
-    port: process.env.PORT || 4000,
-    secret: uuid.v4(), // Generate RFC4122 unique identifier
-    paths: {
-        tokenWhitelist: ['/', '/login', '/signup'],
-        loginBlacklist: ['/login', '/signup']
-    }
-}
 
 
 // ----------------------------
 // App setup
 // ----------------------------
 var app = express(); // Start Express instance
+auth.init({ // TODO: find better way of doing this?
+    config: config,
+    store: store
+});
 
 
 // ----------------------------
@@ -42,9 +32,7 @@ middleware.init({
 // ----------------------------
 routes.init({
     app: app,
-    auth: auth,
-    store: store,
-    secret: config.secret
+    auth: auth
 });
 
 

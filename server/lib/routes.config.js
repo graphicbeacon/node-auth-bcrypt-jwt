@@ -1,8 +1,6 @@
-module.exports.init = function(config) {
-    var app = config.app,
-        auth = config.auth,
-        store = config.store,
-        secret = config.secret;
+module.exports.init = function(options) {
+    var app = options.app,
+        auth = options.auth;
         
     app.get('/', function(req, res) {
         res.render('index', {viewTitle: 'Hello World', content: 'Hello World'});
@@ -22,21 +20,11 @@ module.exports.init = function(config) {
         res.render('protected', {viewTitle: 'Protected', content: 'User Dashboard'});
     });
 
-    app.get('/logout', function(req, res) {
-        // TODO: check that referrer and origin are the same domain to prevent cross site attacks
-        // TODO: Implement logout implementation in auth service?
-        // Remove auth cookie and redirect to login again
-        res.clearCookie('auth');
-        res.status(302).redirect('/login'); 
-    });
+    app.get('/logout', auth.logout);
 
     app.post('/login', auth.login({
-        redirectTo: '/protected',
-        secret: secret,
-        store: store
+        redirectTo: '/protected'
     }));
 
-    app.post('/signup', auth.signup({
-        store: store
-    }));
+    app.post('/signup', auth.signup);
 }
