@@ -32,7 +32,7 @@ module.exports.login = function(options) {
 
 module.exports.signup = function(req, res) {
     var username = req.body.username,
-        password = req.body.password;
+        password = req.body.password,
         passwordRepeat = req.body.passwordRepeat;
     
     if(!username || !password || !passwordRepeat) { // Not enough creds to create user

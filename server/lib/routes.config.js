@@ -15,12 +15,10 @@ module.exports.init = function(options) {
     });
 
     app.get('/login', function(req, res) {
-        // TODO: Redirect to protected screen if already logged in
         res.render('login', {viewTitle: 'Login', content: 'Please login'});
     });
 
     app.get('/signup', function(req, res) {
-        // TODO: Redirect to protected screen if already logged in
         res.render('signup', {viewTitle: 'Signup', content: 'Sign up'});
     });
 
