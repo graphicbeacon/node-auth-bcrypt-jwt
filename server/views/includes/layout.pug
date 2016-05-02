@@ -10,6 +10,11 @@ html(lang="en")
             .main-content-section {
                 padding-top: 100px;
             }
+            @media (min-width: 768px) {
+                .sign-up-item {
+                    margin-left: 10px;
+                }
+            }
     body
         .navbar.navbar-default.navbar-fixed-top
             .container
@@ -25,9 +30,9 @@ html(lang="en")
                             a(href="/logout") Log out
                     else
                         li
-                            a(href="/login") Log in
-                        li
-                            a.btn.btn-default(href="/signup") Sign up
+                            a.btn.btn-default(href="/login") Log in
+                        li.sign-up-item
+                            a.btn.btn-warning(href="/signup") Sign up
                             
         .container.main-content-section
             .row

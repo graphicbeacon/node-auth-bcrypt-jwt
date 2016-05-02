@@ -16,9 +16,9 @@ module.exports.init = function(options) {
     app.use(expressJwt({
         secret: function(req, payload, done) {
             // Logging
-            console.log('[Secret]', config.secret);
-            console.log('[JWT payload]:', payload);
-            console.log('[Session]:', req.session);
+            // console.log('[Secret]', config.secret);
+            // console.log('[JWT payload]:', payload);
+            // console.log('[Session]:', req.session);
             
             done(null, config.secret);
         },
