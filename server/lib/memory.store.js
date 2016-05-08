@@ -3,7 +3,7 @@ var userDatabase = [];
 
 module.exports.init = function(config) {
     // Add default admin user
-    this.addUser('admin', 'superman');
+    this.addUser('admin', 'admin@localhost', 'superman');
 }
 
 module.exports.getUser = function(username, password) {
@@ -19,11 +19,12 @@ module.exports.getUser = function(username, password) {
     });
 }
 
-module.exports.addUser = function(username, password) {
+module.exports.addUser = function(username, email, password) {
     // User and pass supplied
     var salt = bcrypt.genSaltSync(10);
     var newUser = {
         user: username,
+        email: email,
         pass: bcrypt.hashSync(password, salt)
     };
     

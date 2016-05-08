@@ -11,6 +11,7 @@ module.exports.init = function(config) {
     userSchema = new Schema({
         id: ObjectId,
         user: {type: String, required: true},
+        email: {type: String, required: true},
         pass: {type: String, required: true}
     });
     
@@ -27,7 +28,7 @@ module.exports.init = function(config) {
         this.isExistingUser('admin')
             .then(function(isExistingUser) {
                 if(!isExistingUser) {
-                    this.addUser('admin', 'superman');
+                    this.addUser('admin', 'admin@localhost', 'superman');
                 }
             }.bind(this));
     }.bind(this));

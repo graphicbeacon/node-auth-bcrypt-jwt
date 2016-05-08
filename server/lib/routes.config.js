@@ -1,14 +1,6 @@
 module.exports.init = function(options) {
     var app = options.app,
-        auth = options.auth,
-        config = options.config,
-        store = options.store;
-    
-    // Initiates auth service - equivalent to creating object instance
-    auth.init({
-        config: config,
-        store: store
-    });
+        auth = options.auth;
 
     app.get('/', function(req, res) {
         res.render('index', {viewTitle: 'Hello World', content: 'Hello World'});

@@ -6,6 +6,7 @@ var auth = require('./server/lib/auth.service');
 var store = require('./server/lib/mongo.store');
 var middleware = require('./server/lib/middleware.config');
 var routes = require('./server/lib/routes.config');
+var email = require('./server/lib/email.service');
 
 
 // ----------------------------
@@ -13,6 +14,12 @@ var routes = require('./server/lib/routes.config');
 // ----------------------------
 var app = express(); // Start Express instance
 store.init(config); // Setup data store
+email.init(config); // Setup email service
+auth.init({ // Initiates auth service - equivalent to creating object instance
+    config: config,
+    store: store,
+    emailService: email
+});
 
 // ----------------------------
 // Middleware settings

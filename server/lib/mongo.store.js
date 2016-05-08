@@ -15,7 +15,7 @@ module.exports.init = function(config) {
         this.isExistingUser('admin')
             .then(function(isExistingUser) {
                 if(!isExistingUser) {
-                    this.addUser('admin', 'superman');
+                    this.addUser('admin', 'admin@localhost', 'superman');
                 }
             }.bind(this));
     }.bind(this));
@@ -37,11 +37,12 @@ module.exports.getUser = function(username, password) {
     });
 }
 
-module.exports.addUser = function(username, password) {
+module.exports.addUser = function(username, email, password) {
     // User and pass supplied
     var salt = bcrypt.genSaltSync(10);
     var newUser = {
         user: username,
+        email: email,
         pass: bcrypt.hashSync(password, salt)
     };
     // Add to database list

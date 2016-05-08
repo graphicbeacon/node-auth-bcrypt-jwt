@@ -5,12 +5,19 @@ block mainContent
     form.form-horizontal(method="post", action="/signup")
         .form-group
             .col-sm-12.col-md-6
+                label.control-label(for="username") Username
                 input.form-control#username(type="text", name="username", placeholder="Enter your username", required)
         .form-group
             .col-sm-12.col-md-6
+                label.control-label(for="email") Email address
+                input.form-control#email(type="email", name="email", placeholder="Enter your email address", required)
+        .form-group
+            .col-sm-12.col-md-6
+                label.control-label(for="password") Password
                 input.form-control#password(type="password", name="password", placeholder="Enter your password", required)
         .form-group
             .col-sm-12.col-md-6
+                label.control-label(for="passwordRepeat") Retype Password
                 input.form-control#passwordRepeat(type="password", name="passwordRepeat", placeholder="Repeat your password", required)
         .form-group
             .col-sm-12.col-md-6
