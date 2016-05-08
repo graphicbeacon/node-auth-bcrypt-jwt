@@ -43,6 +43,8 @@ module.exports.init = function(options) {
             jwt.verify(token, config.secret, function(err, decoded) {
                 // Validated users will have a user property on the request object
                 res.locals.isLoggedIn = !!decoded;
+                res.locals.userName = req.user.user;
+                
                 next();
             });
         } else {
