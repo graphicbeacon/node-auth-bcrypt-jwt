@@ -9,8 +9,11 @@ html(lang="en")
             body:not(.authenticated) .navbar.navbar-fixed-top {
                 padding: 10px 0;
             }
-            .main-content-section {
+            body.anon .main-content-section {
                 padding-top: 100px;
+            }
+            body.authenticated .main-content-section {
+                padding-top: 80px;
             }
             @media (min-width: 768px) {
                 .sign-up-item {
