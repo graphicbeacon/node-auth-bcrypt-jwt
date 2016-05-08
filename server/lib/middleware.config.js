@@ -41,9 +41,19 @@ module.exports.init = function(options) {
         var token = req.cookies[config.authCookie] || null;
         if(token) {
             jwt.verify(token, config.secret, function(err, decoded) {
+                var isLoggedIn; 
+                
+                if(err) { // Remove any lingering jwt tokens
+                    res.clearCookie(config.authCookie);
+                }
+                
                 // Validated users will have a user property on the request object
-                res.locals.isLoggedIn = !!decoded;
-                res.locals.userName = req.user.user;
+                isLoggedIn = !!decoded;
+                res.locals.isLoggedIn = isLoggedIn;
+                
+                if(isLoggedIn) {
+                    res.locals.userName = req.user.user;
+                }
                 
                 next();
             });
