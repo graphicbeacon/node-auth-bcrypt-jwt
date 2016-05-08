@@ -25,4 +25,6 @@ module.exports.init = function(options) {
     }));
 
     app.post('/signup', auth.signup);
+    
+    app.get('/activate/:hash', auth.activate);
 }

@@ -12,7 +12,11 @@ module.exports.sendActivationLink = function(recipient) {
         from: 'localhost',
         fromname: 'noreply@localhost',
         subject: 'Welcome to Brand App! Confirm your email',
-        html: '<p>Hello world</p>' // TODO: Use email templates to generate email with activation link
+        html: '<h2 align="center">Brand App</h2> \
+            <p align="center">You\'re almost there! Let\'s confirm your email address.</p>\
+            <p align="center"><a href="http://localhost:4000/activate/' + recipient.activationHash + '">Confirm email address</a></p>' 
+            // TODO: Use email templates to generate email with activation link
+            // TODO Dynamically generate url from request object i.e, req.host, req.protocol etc...
     });
     
     return new Promise(function(resolve, reject) {
