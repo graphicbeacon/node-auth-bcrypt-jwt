@@ -13,6 +13,7 @@ module.exports.init = function(options) {
     app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
     app.use(cookieParser());
     app.use(session({secret: config.secret, resave: true, saveUninitialized: true})) // TODO: Replace in-memory session store
+    // TODO Refactor express-jwt with passport-jwt or passport-local?
     app.use(expressJwt({
         secret: function(req, payload, done) {
             // Logging
@@ -42,7 +43,7 @@ module.exports.init = function(options) {
         if(token) {
             jwt.verify(token, config.secret, function(err, decoded) {
                 var isLoggedIn; 
-                console.log('Logged in User at', req.url, req.user, decoded);
+                
                 if(err) { // Remove any lingering jwt tokens
                     res.clearCookie(config.authCookie);
                 }
