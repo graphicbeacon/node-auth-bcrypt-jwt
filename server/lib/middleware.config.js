@@ -42,7 +42,7 @@ module.exports.init = function(options) {
         if(token) {
             jwt.verify(token, config.secret, function(err, decoded) {
                 var isLoggedIn; 
-                
+                console.log('Logged in User at', req.url, req.user, decoded);
                 if(err) { // Remove any lingering jwt tokens
                     res.clearCookie(config.authCookie);
                 }
@@ -52,7 +52,7 @@ module.exports.init = function(options) {
                 res.locals.isLoggedIn = isLoggedIn;
                 
                 if(isLoggedIn) {
-                    res.locals.userName = req.user.user;
+                    res.locals.userName = req.user ? req.user.user : decoded.user;
                 }
                 
                 next();

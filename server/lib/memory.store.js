@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt');
-var userDatabase = [];
-
+var userDatabase = [], tmpUserDatabase = [];
+// TODO update with temp user methods from mongo.store
 module.exports.init = function(config) {
     // Add default admin user
     this.addUser('admin', 'admin@localhost', 'superman');

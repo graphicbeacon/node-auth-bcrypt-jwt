@@ -55,7 +55,7 @@ module.exports.signup = function(req, res) {
     } else if(password !== passwordRepeat) { // Passwords not matching
         res.status(401).send('Passwords do not match.');
     } else {
-        store.isExistingUser(username, email)
+        store.isExistingUser({user: username, email: email})
             .then(function(userAlreadyExists) {
                 if(userAlreadyExists) {
                     res.status(401).send('Username or email address already exists! Please create a new one.');
@@ -66,42 +66,66 @@ module.exports.signup = function(req, res) {
                         if(tmpUserExists) { // Email verification link already sent for this user
                             res.status(200).send(activationMessage);
                         } else {
-                            // Create temp user
-                            // TODO generate temp UUID hash
-                            store.addTmpUser(username, email, password)
-                                .then(function(activationHash) {
-                                    // Send email verification link
-                                    emailService.sendActivationLink({
-                                        email: email,
-                                        username: username,
-                                        activationHash: activationHash
-                                    })
-                                    .then(function(success) {
-                                        // Sent activation link
-                                        res.status(200)
-                                            .set('Content-Type', 'text/html')
-                                            .send(activationMessage);
-                                    }, handleError(res)); // TODO if this fails have try again link.
-                                    
-                                }, handleError(res)); 
+                            createTempUserAndSendEmailValidation();
                         }
                     });
                 }
             }, handleError(res));
+            
+        //
+        function createTempUserAndSendEmailValidation() {
+            // Create temp user
+            // TODO generate temp UUID hash
+            store.addTmpUser(username, email, password)
+                .then(function(activationHash) {
+                    // Send email verification link
+                    emailService.sendActivationLink({
+                        email: email,
+                        username: username,
+                        activationHash: activationHash
+                    })
+                    .then(function(success) {
+                        // Sent activation link
+                        res.status(200)
+                            .set('Content-Type', 'text/html')
+                            .send(activationMessage);
+                    }, handleError(res)); // TODO if this fails have try again link.
+                    
+                }, handleError(res)); 
+        }
     }
 }
 
 module.exports.activate = function(req, res) {
     var activationHash = req.params.hash;
+    // Check if user already authenticated...
+    store.isExistingUser({activationHash: activationHash})
+        .then(function(isExistingUser) {
+            if(isExistingUser) {
+                res.status(302).redirect('/login'); // ... and then notify by redirecting to /login screen
+            } else {
+                activateUser();
+            }
+        }, handleError(res));
     
-    store.getTmpUser(activationHash)
-        .then(function(tmpUser) {
-            // TODO: Insert tmpUser into users database
-            // after success remove entry in tmpUsers store
-            // send success response
-            
-            res.status(200).send('All was good');
-        }, handleError(res))
+    //
+    function activateUser() {
+        store.getTmpUser(activationHash)
+            .then(function(tmpUser) {
+                
+                // TODO Watch out for specific failures during this sequence of promises to figure out which one failed and respond accordingly
+                Promise.all([
+                    store.addUser(tmpUser),
+                    store.removeTmpUser(tmpUser.user, tmpUser.email)
+                ]).then(function(values) {
+                    console.log(values);
+                    res.status(200)
+                        .set('Content-Type', 'text/html')
+                        .send('Your account has been activated. Please <a href="/login">log in</a>.');
+                }, handleError(res)); 
+                
+            }, handleError(res));
+    }
 }
 
 module.exports.logout = function(req, res) {
