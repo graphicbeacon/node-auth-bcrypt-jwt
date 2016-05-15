@@ -3,7 +3,7 @@ var uuid = require('node-uuid');
 var MongoClient = require('mongodb').MongoClient;
 var DB, collectionName = 'users', tmpCollectionName = 'tmpusers';
 
-function splitObjIntoArray(obj) { // Splits each key:value pair into array item
+function splitObjIntoArray(obj) { // Splits each key:value pair into array item, i.e., [{key: value}, {key: value}]
     var arr = [];
     
     for(var key in obj) {
