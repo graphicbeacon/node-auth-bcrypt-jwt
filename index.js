@@ -3,7 +3,7 @@ var express = require('express');
 // Project files
 var config = require('./server/lib/config');
 var auth = require('./server/lib/auth.service');
-var store = require('./server/lib/mongo.store');
+var store = require('./server/lib/user.store');
 var middleware = require('./server/lib/middleware.config');
 var routes = require('./server/lib/routes.config');
 var email = require('./server/lib/email.service');
