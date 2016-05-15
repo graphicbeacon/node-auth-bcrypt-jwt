@@ -58,17 +58,19 @@ module.exports.signup = function(req, res) {
         store.isExistingUser({user: username, email: email})
             .then(function(userAlreadyExists) {
                 if(userAlreadyExists) {
-                    res.status(401).send('Username or email address already exists! Please create a new one.');
+                    res.status(401)
+                        .set('Content-Type', 'text/html')
+                        .send('Username or email address already exists! Please <a href="/signup">create a new one</a>.');
                 } else {
-                    // TODO: Also check there is no temp account already existing
+                    // Check there is no temp account already existing
                     store.isExistingTmpUser(username, email)
-                    .then(function(tmpUserExists) {
-                        if(tmpUserExists) { // Email verification link already sent for this user
-                            res.status(200).send(activationMessage);
-                        } else {
-                            createTempUserAndSendEmailValidation();
-                        }
-                    });
+                        .then(function(tmpUserExists) {
+                            if(tmpUserExists) { // Email verification link already sent for this user
+                                res.status(200).send(activationMessage);
+                            } else {
+                                createTempUserAndSendEmailValidation();
+                            }
+                        });
                 }
             }, handleError(res));
             
@@ -101,6 +103,7 @@ module.exports.activate = function(req, res) {
     // Check if user already authenticated...
     store.isExistingUser({activationHash: activationHash})
         .then(function(isExistingUser) {
+            console.log('Is existing user', isExistingUser);
             if(isExistingUser) {
                 res.status(302).redirect('/login'); // ... and then notify by redirecting to /login screen
             } else {
