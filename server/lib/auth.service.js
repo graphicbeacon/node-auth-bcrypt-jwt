@@ -33,7 +33,7 @@ module.exports.login = function(options) {
                 });
                 
                 // Put signed token in cookie to be used in subsequent requests
-                res.cookie(config.authCookie, responseToken);
+                res.cookie(config.authCookie, responseToken, {httpOnly: true});
                 res.status(200).redirect(redirectTo);
             }, function(err) {
                 res.status(401)
