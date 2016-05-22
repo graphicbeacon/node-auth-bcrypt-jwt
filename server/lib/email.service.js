@@ -1,8 +1,9 @@
 var sendgrid = require('sendgrid');
-var emailTransport;
+var emailTransport, tmpUserExpiryHours;
 
 module.exports.init = function(config) {
     emailTransport = sendgrid(config.smtpApiToken);
+    tmpUserExpiryHours = config.tmpUserExpiry / (60 * 60);
 }
 
 module.exports.sendActivationLink = function(recipient) {
@@ -12,9 +13,10 @@ module.exports.sendActivationLink = function(recipient) {
         from: 'localhost',
         fromname: 'noreply@localhost',
         subject: 'Welcome to Brand App! Confirm your email',
-        html: '<h2 align="center">Brand App</h2> \
+        html: '<h2 align="center">Brand App</h2>\
             <p align="center">You\'re almost there! Let\'s confirm your email address.</p>\
-            <p align="center"><a href="http://localhost:4000/activate/' + recipient.activationHash + '">Confirm email address</a></p>' 
+            <p align="center"><a href="http://localhost:4000/activate/' + recipient.activationHash + '">Confirm email address</a></p>\
+            <p align="center">Please note that this activation link will expire in ' + tmpUserExpiryHours + ' hours.</p>' 
             // TODO: Use email templates to generate email with activation link
             // TODO Dynamically generate url from request object i.e, req.host, req.protocol etc...
     });

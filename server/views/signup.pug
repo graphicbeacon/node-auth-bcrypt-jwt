@@ -8,6 +8,13 @@ block mainContent
                 label.control-label(for="username") Username
                 input.form-control#username(type="text", name="username", placeholder="Enter your username", required)
         .form-group
+            .col-sm-12.col-md-3
+                label.control-label(for="firstname") First name
+                input.form-control#firstname(type="text", name="firstname", placeholder="Enter your first name", required)
+            .col-sm-12.col-md-3
+                label.control-label(for="lastname") Last name
+                input.form-control#lastname(type="text", name="lastname", placeholder="Enter your last name", required)
+        .form-group
             .col-sm-12.col-md-6
                 label.control-label(for="email") Email address
                 input.form-control#email(type="email", name="email", placeholder="Enter your email address", required)
@@ -21,4 +28,4 @@ block mainContent
                 input.form-control#passwordRepeat(type="password", name="passwordRepeat", placeholder="Repeat your password", required)
         .form-group
             .col-sm-12.col-md-6
-                button.btn.btn-default(type="submit") Create account
+                button.btn.btn-warning(type="submit") Create account

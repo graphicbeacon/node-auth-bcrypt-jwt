@@ -18,39 +18,38 @@ module.exports.init = function(options) {
     emailService = options.emailService;
 }
 
-module.exports.login = function(options) {
-    var redirectTo = options.redirectTo;
-        
-    return function(req, res) {
-        var body = req.body;
-        
-        store.getUser(body.username, body.password)
-            .then(function(user) {
-                // creates a json web token to distribute as logged in bearer
-                var responseToken = jwt.sign({user: user.user}, config.secret, {
-                    issuer: config.title,
-                    subject: user.user
-                });
-                
-                // Put signed token in cookie to be used in subsequent requests
-                res.cookie(config.authCookie, responseToken, {httpOnly: true});
-                res.status(200).redirect(redirectTo);
-            }, function(err) {
-                res.status(401)
-                    .set('Content-Type', 'text/html')
-                    .send('Invalid username or password. Please <a href="/login">try again</a>.');
+module.exports.login = function(req, res) {
+    var body = req.body;
+    
+    store.getUser(body.username, body.password)
+        .then(function(user) {
+            // creates a json web token to distribute as logged in bearer
+            var responseToken = jwt.sign({user: user.user}, config.secret, {
+                issuer: config.title,
+                subject: user._id
             });
-    }
+            
+            // Put signed token in cookie to be used in subsequent requests
+            res.cookie(config.authCookie, responseToken, {httpOnly: true});
+            res.status(200).redirect(config.adminPath);
+        }, function(err) {
+            res.status(401)
+                .set('Content-Type', 'text/html')
+                .send('Invalid username or password. Please <a href="/login">try again</a>.');
+        });
 }
 
 module.exports.signup = function(req, res) {
-    var username = req.body.username,
-        email = req.body.email,
-        password = req.body.password,
-        passwordRepeat = req.body.passwordRepeat,
+    var body = req.body,
+        username = body.username,
+        firstname = body.firstname,
+        lastname = body.lastname,
+        email = body.email,
+        password = body.password,
+        passwordRepeat = body.passwordRepeat,
         activationMessage = 'We have sent you an activation link to the email address you gave us. Follow the instructions to verify your account.';
     
-    if(!username || !email || !password || !passwordRepeat) { // Not enough creds to create user
+    if(!username || !firstname || !lastname || !email || !password || !passwordRepeat) { // Not enough creds to create user
         res.status(401).send('Not enough information to create user.');    
     } else if(password !== passwordRepeat) { // Passwords not matching
         res.status(401).send('Passwords do not match.');
@@ -78,7 +77,7 @@ module.exports.signup = function(req, res) {
         function createTempUserAndSendEmailValidation() {
             // Create temp user
             // TODO generate temp UUID hash
-            store.addTmpUser(username, email, password)
+            store.addTmpUser(username, firstname, lastname, email, password)
                 .then(function(activationHash) {
                     // Send email verification link
                     emailService.sendActivationLink({
@@ -103,7 +102,6 @@ module.exports.activate = function(req, res) {
     // Check if user already authenticated...
     store.isExistingUser({activationHash: activationHash})
         .then(function(isExistingUser) {
-            console.log('Is existing user', isExistingUser);
             if(isExistingUser) {
                 res.status(302).redirect('/login'); // ... and then notify by redirecting to /login screen
             } else {
@@ -129,6 +127,21 @@ module.exports.activate = function(req, res) {
                 
             }, handleError(res));
     }
+}
+
+module.exports.updateUser = function(req, res) {
+    var body = req.body;
+    
+    store.updateUser(req.user.sub, {
+        fname: body.firstname,
+        lname: body.lastname,
+        email: body.email,
+        about: body.aboutme.replace(/[<>]/ig,'')
+    }).then(function(updated) {
+        res.status(200)
+            .set('Content-Type', 'text/html')
+            .redirect('/profile');
+    }); // TODO capture exception
 }
 
 module.exports.logout = function(req, res) {

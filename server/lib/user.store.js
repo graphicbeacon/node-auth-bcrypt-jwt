@@ -81,6 +81,8 @@ module.exports.addUser = function(user) {
     // User and pass supplied
     var newUser = {
         user: user.user,
+        fname: firstname,
+        lname: lastname,
         email: user.email,
         pass: user.pass,
         activationHash: user.activationHash,
@@ -97,10 +99,24 @@ module.exports.addUser = function(user) {
     });
 }
 
-module.exports.addTmpUser = function(username, email, password) {
+module.exports.updateUser = function(userId, updatedInfo) {
+    // TODO Define interface for info like other methods
+    return new Promise(function(resolve, reject) {
+        if(!DB) reject() // Database not connected
+        
+        DB.users.updateOne({_id: userId}, updatedInfo, function(err, updatedUser) {
+            if(err) reject(err);
+            else resolve(!!savedUser); // User update success
+        });
+    });
+}
+
+module.exports.addTmpUser = function(username, firstname, lastname, email, password) {
     // User and pass supplied
     var tmpUser = {
         user: username,
+        fname: firstname,
+        lname: lastname,
         email: email,
         pass: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
         activationHash: uuid.v4(),

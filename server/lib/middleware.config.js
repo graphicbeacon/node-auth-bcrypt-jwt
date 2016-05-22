@@ -8,6 +8,7 @@ module.exports.init = function(options) {
     var app = options.app,
         config = options.config;
         
+    app.enable('trust proxy');
     app.set('views', __dirname + '/../views');
     app.set('view engine', 'pug');
     app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
@@ -77,7 +78,7 @@ module.exports.init = function(options) {
         // blacklisted views to dashboard screens...
         var blacklistedLoggedInRoutes = config.paths.loginBlacklist.indexOf(req.url) > -1;
         if(blacklistedLoggedInRoutes && res.locals && res.locals.isLoggedIn) {
-            res.redirect(302, '/protected');
+            res.redirect(302, config.adminPath);
         } else {
             // ...else move on
             next();
