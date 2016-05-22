@@ -12,7 +12,15 @@ module.exports.init = function(options) {
     app.set('view engine', 'pug');
     app.use(bodyParser.urlencoded({extended: false})); // create application/x-www-form-urlencoded parser
     app.use(cookieParser());
-    app.use(session({secret: config.secret, resave: true, saveUninitialized: true})) // TODO: Replace in-memory session store
+    app.use(session({ // TODO: Replace in-memory session store
+        secret: config.secret, 
+        resave: true, 
+        saveUninitialized: true,
+        cookie: {
+            httpOnly: true,
+            path: '/'
+        }
+    })) 
     // TODO Refactor express-jwt with passport-jwt or passport-local?
     app.use(expressJwt({
         secret: function(req, payload, done) {
